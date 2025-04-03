@@ -1,0 +1,233 @@
+from Pages import homepagejio
+from Smoke_tests.utilities.base_class import BaseClass
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.common.keys import Keys
+import time
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from tests.test_data import test_data
+import requests
+import random
+from Smoke_tests.object.Selenium_helper import SeleniumHelper
+class QuotePage(BaseClass):
+
+    def __init__(self, driver):
+        self.driver = driver
+    def motor(self):
+        log=self.getLogger()
+        Ac = ActionChains(self.driver)
+        wait = WebDriverWait(self.driver, 20)
+        quote=homepagejio.HomePage
+        quote.leads(self)
+        prod=By.CSS_SELECTOR,"div.css-12hd50 p"
+        product=wait.until(EC.presence_of_all_elements_located(prod))
+        
+        
+        for podu in product:
+                    pod=podu.text
+                    if pod=="Car":
+                    
+
+                        vehino="Enter car registration number"
+                        vehin=self.driver.find_element(By.ID,vehino)
+                        vehin.send_keys("MH01WG7452")
+                        mobino="Enter mobile number"
+                        mobin=self.driver.find_element(By.ID,mobino)
+                        mobin.send_keys("7894566623")
+                        button="button#Get\ free\ quotes"
+                        buttonquo=self.driver.find_element(By.CSS_SELECTOR,button)
+                        buttonquo.click()
+                        time.sleep(5)
+
+                        br=By.ID,"#make"
+                        brands=wait.until(EC.visibility_of_all_elements_located(br))
+                        
+                        
+                        if brands:
+                            time.sleep(4)
+                        
+                            ra_br=random.choice(brands)
+                            ra_br.click()
+                        time.sleep(5)
+                        
+                        
+                            
+                        vars=By.ID,"#model"
+                        varints=wait.until(EC.visibility_of_all_elements_located(vars)) 
+                        
+                        if varints:
+                                ra_vr=random.choice(varints)
+                                ra_vr.click()
+                                time.sleep(9)
+                                log.info("trupass")
+    def health(self):
+          
+        log=self.getLogger()
+        Ac = ActionChains(self.driver)
+        wait = WebDriverWait(self.driver, 20)
+        
+        prod=By.CSS_SELECTOR,".product-section li"
+        product=wait.until(EC.presence_of_all_elements_located(prod))
+        pop_up=SeleniumHelper(self.driver)
+        
+        for podu in product:
+                    pod=podu.get_attribute("id")
+                    if pod=="Health": 
+                          
+                        podu.click()             
+                        
+                        checkbox=By.CSS_SELECTOR,".css-j8yymo"
+                        selectcheck=wait.until(EC.presence_of_all_elements_located(checkbox))
+                        ra_slcheck=random.choice(selectcheck)
+                        value=ra_slcheck.get_attribute("id")
+                        
+                        if value=="One Adult":
+                            
+                                ra_slcheck.click()
+                                time.sleep(5)
+                                
+                                
+                                rel=By.CSS_SELECTOR,"css-slyssw"
+                                relation=wait.until(EC.visibility_of_element_located(rel))
+                                
+                                relation.click()
+                                calander =By.CSS_SELECTOR,".css-1wjkg3"
+                                alclander=wait.until(EC.visibility_of_element_located(calander))
+                                alclander.click()
+                                year_slec=By.CSS_SELECTOR,"css-1p8hrm8"
+                                allYear_slec=wait.until(EC.presence_of_all_elements_located(year_slec))
+                                sel=random.choice(allYear_slec)
+                                sel.click()
+                                month_slec=By.CSS_SELECTOR,"css-1cw4hi4"
+                                all_monthslec=wait.until(EC.presence_of_all_elements_located(month_slec))
+                                mont=random.choice(all_monthslec)
+                                for _ in range(3):
+                                    mont.click()
+                                date_slec=By.CSS_SELECTOR,".css-a78wou"
+                                alldate_slec=wait.until(EC.presence_of_all_elements_located(date_slec))
+                                date=random.choice(alldate_slec)
+                                date.click()
+                                gender=By.CSS_SELECTOR,".css-qiwgdb.css-qiwgdb.css-qiwgdb"
+                                gendersel=wait.until(EC.presence_of_element_located(gender))
+                                gendersel.click()
+                                se=By.CSS_SELECTOR,"css-1km1ehz"
+                                se_sel=wait.until(EC.presence_of_all_elements_located(se))
+                                sel_se=random.choice(se_sel)
+                                sel_se.click()
+                                continue_btn=By.CSS_SELECTOR,".MuiButton-root"
+                                continue_but=wait.until(EC.presence_of_element_located(continue_btn))
+                                continue_but.click()
+
+                                    # pop_up.remove_popup()
+                                # time.sleep(70)
+                                # pop_up.remove_popup()
+                                # time.sleep(5)
+                                qutbut=self.driver.find_element(By.CSS_SELECTOR,".primaryBtns .MuiButton-root")
+                                qutbut.click()
+                                # self.driver.refresh()
+                                time.sleep(10)
+                                url=self.driver.current_url
+                                log.info(url)
+                                assert "quote_no" in url
+                                
+                            
+                                
+                                # quotetions=By.CSS_SELECTOR,".css-14kjlot"
+                                # all_quote=wait.until(EC.visibility_of_any_elements_located(quotetions))
+                                # assert all_quote
+
+
+                                
+                                #  if value=="two Adult":
+                                #       id_adult="1st Adult Age-autocomplete"
+                                #       age=self.driver.find_elements(By.ID,id_adult)
+                                #       age.click()
+                                #       ages=By.ID," Adult Age-autocomplete-listbox"
+                                #       listage=wait.until(EC.visibility_of_all_elements_located(ages))
+                                #       options = self.driver.find_elements(By.CSS_SELECTOR,"[role='option']")  # You can adjust this selector as per your DOM
+
+                                #         # Step 4: Choose a random option from the list
+                                #       random_option = random.choice(options)
+
+                                #         # Step 5: Click the random option
+                                #       random_option.click()
+                                
+                        elif value=="One Adult" :
+                                time.sleep(5)
+                                    
+                                cont="#Continue"
+                                conti=self.driver.find_element(By.CSS_SELECTOR,cont) 
+                                conti.click()
+
+                                rel=By.CSS_SELECTOR,".css-43hhca .MuiAutocomplete-inputRoot .MuiAutocomplete-input"
+                                relation=wait.until(EC.visibility_of_element_located(rel))
+                                relation.click()
+
+                                all_option =By.CSS_SELECTOR,".css-17glcv2 li"
+                                all_inoption=wait.until(EC.presence_of_all_elements_located(all_option))
+                                sel=random.choice(all_inoption)
+                                sel.click()  
+
+                                qutbut=self.driver.find_element(By.CSS_SELECTOR,".primaryBtns .MuiButton-root")
+                                qutbut.click()
+                                # time.sleep(70)
+                                # pop_up.remove_popup()
+                                time.sleep(5)
+                                url=self.driver.current_url
+                                log.info(url)
+                                assert "quote_no" in url
+                                log.info("prequote pass")
+                                
+                                # quotetions=By.CSS_SELECTOR,".css-14kjlot"
+                                # all_quote=wait.until(EC.visibility_of_any_elements_located(quotetions))
+                                # assert all_quote
+                                
+                                # self.driver.quit()              
+                        elif value == "Children":
+                                ra_slcheck.click()
+                                time.sleep(5)
+                                cont="#Continue"
+                                conti=self.driver.find_element(By.CSS_SELECTOR,cont) 
+                                conti.click()
+
+                                rel=By.CSS_SELECTOR,".css-43hhca .MuiAutocomplete-inputRoot .MuiAutocomplete-input"
+                                relation=wait.until(EC.visibility_of_element_located(rel))
+                                relation.click()
+
+                                all_option =By.CSS_SELECTOR,".css-17glcv2 li"
+                                all_inoption=wait.until(EC.presence_of_all_elements_located(all_option))
+                                sel=random.choice(all_inoption)
+                                sel.click()  
+
+                                qutbut=self.driver.find_element(By.CSS_SELECTOR,".primaryBtns .MuiButton-root")
+                                qutbut.click()
+                                # time.sleep(70)
+                                # pop_up.remove_popup()
+                                time.sleep(5)
+                                self.driver.refresh()
+                                time.sleep(10)
+                                url=self.driver.current_url
+                                log.info(url)
+                                assert "quote_no" in url
+                                log.info("prequote pass")
+
+                                
+                                
+                                # quotetions=By.CSS_SELECTOR,".css-14kjlot"
+                                # all_quote=wait.until(EC.visibility_of_any_elements_located(quotetions))
+                                # assert all_quote
+                                 
+                            
+                            
+                        break            
+                    else:
+                          continue
+                        
+                           
+                    
+                                       
+                    
+                
+        log.info("prequote pass")
+
