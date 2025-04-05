@@ -18,6 +18,9 @@ import asyncio
 import aiohttp
 import time
 
+import test_data.test_alldata
+import test_data.test_alldata
+
 
 class SeleniumHelper:
     def __init__(self, driver):
@@ -247,6 +250,18 @@ class SeleniumHelper:
             except NoSuchElementException:
                 pass
             print("Scheduled JavaScript pop-ups are cleared.")
+
+
+    def save_to_test_data(new_url):
+        import test_data
+    # Avoid duplicates
+        if new_url not in test_data.test_alldata.Health_post:
+         test_data.test_alldata.Health_post.append(new_url)
+
+        # Write back to the file
+        with open("test_data.py", "w") as f:
+            f.write(f"Health_post = {repr(test_data.Health_post)}\n")
+
     #     """Wait for the pop-up and remove it if it appears."""
     #     try:
     #         self.driver.execute_script("""
