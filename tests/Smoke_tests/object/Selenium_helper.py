@@ -17,7 +17,7 @@ import requests
 import asyncio
 import aiohttp
 import time
-
+import inspect
 import test_data.test_alldata
 import test_data.test_alldata
 
@@ -253,21 +253,23 @@ class SeleniumHelper:
 
 
     def save_to_test_data(new_url):
-        import test_data
-    # Avoid duplicates
-        if new_url not in test_data.test_alldata.Health_post:
-         test_data.test_alldata.Health_post.append(new_url)
+        from test_data import test_newdata
 
-        # Write back to the file
-        with open("test_data.py", "w") as f:
-            f.write(f"Health_post = {repr(test_data.Health_post)}\n")
+        # Avoid duplicates
+        if new_url not in test_newdata.Health_post:
+            test_newdata.Health_post.append(new_url)
+            file_path = inspect.getfile(test_newdata)
 
-    #     """Wait for the pop-up and remove it if it appears."""
-    #     try:
-    #         self.driver.execute_script("""
-    #     window.alert = function() {};  // Disables alert pop-ups
-    #     window.confirm = function() { return true; };  // Disables confirm pop-ups
-    #     window.prompt = function() { return ''; };  // Disables prompt pop-ups
-    # """)
-    #     except:
-    #         print("No pop-up found, proceeding.")
+            # Overwrite test_alldata.py with the updated list only
+            with open(file_path, "w") as f:
+                f.write(f"Health_post = {repr(test_newdata.Health_post)}")
+
+    def del_to_tests_data():
+        from test_data import test_newdata
+        test_newdata.Health_post.clear()
+        file_path = inspect.getfile(test_newdata)
+
+            # Overwrite test_alldata.py with the updated list only
+        with open(file_path, "w") as f:
+                f.write(f"Health_post = {repr(test_newdata.Health_post)}")
+    

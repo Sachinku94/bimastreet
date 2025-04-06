@@ -18,13 +18,17 @@ import asyncio
 
 class Testone(BaseClass):
 
-    def test_diffjioleadscar(self):
-        
-        carlead=QuotePage(self.driver)
-        carlead.motor()
+    
     def test_healthleadprequote(self):
         healthlead=QuotePage(self.driver)
         healthlead.healthpre()
     def test_healthleadpostquote(self):
         healthleadpost=QuotePage(self.driver)
         healthleadpost.healthpost()
+
+
+
+
+
+
+        
