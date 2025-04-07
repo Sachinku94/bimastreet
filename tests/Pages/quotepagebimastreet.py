@@ -212,12 +212,41 @@ class QuotePage(BaseClass):
         try:
             helthqoteurl=test_newdata.Health_post
             for hel in helthqoteurl:
+                logolist=[]
+                premlist=[]
                 self.driver.get(hel)
                 time.sleep(10)
+                insurer_logo=By.CSS_SELECTOR,"img.insurerLogo"
+                srcinsurer_log=self.wait.until(EC.presence_of_all_elements_located(insurer_logo))
+                for insurer in srcinsurer_log:
+                    logo=insurer.get_attribute("src")
+                    logolist.append(logo)
+                    self.log.info('done')
+                prem=By.CSS_SELECTOR,"p.premium span"
+                prem_all=self.wait.until(EC.presence_of_all_elements_located(prem))
+                for premi in prem_all:
+                   premitext= premi.text
+                   premlist.append(premitext)
+
                 buy_policy=By.CSS_SELECTOR,"button#buy_policy"
                 policy=self.wait.until(EC.presence_of_all_elements_located(buy_policy))
                 policy_choice=random.choice(policy)
                 policy_choice.click()
+                indexvalue=policy.index(policy_choice)
+                
+                time.sleep(10)
+                insurer_logoekyc=By.CSS_SELECTOR,"img.insurerLogo"
+                srcinsurer_log=self.wait.until(EC.presence_of_element_located(insurer_logoekyc))
+                srcinsurer_logekyc=srcinsurer_log.get_attribute("src")
+                self.log.info('donekyc')
+                premkyc=By.CSS_SELECTOR,"h5.premium"
+                premkycfinal=self.wait.until(EC.presence_of_element_located(premkyc)).text
+
+
+                
+                assert logolist[indexvalue] == srcinsurer_logekyc
+                assert premlist[indexvalue] == premkycfinal
+                    
                 del_record=SeleniumHelper.del_to_tests_data
                 del_record()
         except Exception as e:
