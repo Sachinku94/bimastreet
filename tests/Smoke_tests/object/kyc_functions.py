@@ -20,10 +20,16 @@ import test_data.test_alldata
 import test_data.test_alldata
 import random
 from test_data import test_alldata
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from object.Selenium_helper import SeleniumHelper
 
 class KYc_function:
     def __init__(self, driver):
         self.driver = driver
+        self.wait = WebDriverWait(self.driver, 20)
+        
+        self.log = self.getLogger()
 
     def getLogger(self):
         loggerName = inspect.stack()[1][3]
@@ -79,9 +85,63 @@ class KYc_function:
                             kyc.send_keys(selected_value)  
                             
                         time.sleep(5)
-                        
-                            # self.log.info(print(f"Sent '{selected_value if stored_index is not None else random_value}' to field '{idkyc}'"))
 
+            elif idkyc =="document_for_verification-autocomplete" or idkyc=="income_source-autocomplete" or idkyc=="occupation-autocomplete" or idkyc=="city-autocomplete" or idkyc=="area_/_town_/_locality-autocomplete":
+
+                     kyes = test_alldata.Kyc_Details.keys()
+                
+                     for ky in kyes:
+                    
+                        if ky == idkyc:
+                        
+                        
+                            
+                        
+                            
+                            selected_value = test_alldata.Kyc_Details[ky][stored_index]  
+                           
+                            kyc.clear()  
+                            kyc.send_keys(selected_value) 
+                            selec_value=By.CSS_SELECTOR,".css-ue1yok .MuiAutocomplete-option" 
+                            select_val=self.wait.until(EC.presence_of_element_located(selec_value))
+                            select_val.click()
+            elif idkyc=="gender" :
+                     self.log.info("done cl")
+                     kyes = test_alldata.Kyc_Details.keys()
+                
+                     for ky in kyes:
+                    
+                        if ky == idkyc:
+                             selected_value = test_alldata.Kyc_Details[ky][stored_index] 
+                             self.log.info("done cli")
+                             
+                             self.log.info("done clear")
+                             kyc.click()
+                             self.log.info("done click gender")
+                             selec_value=By.CSS_SELECTOR,".MuiMenu-paper .MuiMenu-list .MuiMenuItem-root" 
+                             select_val=self.wait.until(EC.presence_of_all_elements_located(selec_value))
+                             for sel in select_val:
+                                  text_val=sel.text.strip()
+                                  if text_val==selected_value:
+                                       sel.click()
+                                  break
+            elif idkyc=="ckycproposerdob":
+                     kyes = test_alldata.Kyc_Details.keys()
+                
+                     for ky in kyes:
+                    
+                        if ky == idkyc:
+                             selected_value = test_alldata.Kyc_Details[ky][stored_index]
+                             yearsel=SeleniumHelper.calander_picker(self,dob=selected_value)
+                             yearsel
+                     
+                             
+                        
+                        
+                            
+                        
+                            
+                                  
 
                         
                         
