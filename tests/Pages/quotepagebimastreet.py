@@ -122,6 +122,7 @@ import time
 import random
 import logging
 from Smoke_tests.object.Selenium_helper import SeleniumHelper
+from Smoke_tests.object.kyc_functions import KYc_function
 
 class QuotePage(BaseClass):
 
@@ -249,8 +250,32 @@ class QuotePage(BaseClass):
                     
                 del_record=SeleniumHelper.del_to_tests_data
                 del_record()
+
+                kycpageurl=self.driver.current_url
+        
+                Save_file=SeleniumHelper.save_to_test_data
+                Save_file(kycpageurl)
+                assert "ckyc-verification"   in  kycpageurl
+                self.log.info(kycpageurl)
+
+                time.sleep(10)
+
+
         except Exception as e:
             self.log.error(f"Health post quote failed: {e}")
             self.log.info(f"Current URL: {self.driver.current_url}")
+
+    def healthkyc(self):
+
+        try:
+            helthqoteurl=test_newdata.Health_post
+            for hel in helthqoteurl:
+                self.driver.get(hel)
+                time.sleep(10)
+                dokyc=KYc_function.Kycfunction(self)
+                dokyc
+        except Exception as e:
+            self.log.error(f"Health kyc failed: {e}")
+            self.log.info(f"Current URL: {self.driver.current_url}")        
 
 

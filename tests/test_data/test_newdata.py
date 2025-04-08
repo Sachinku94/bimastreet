@@ -1,1 +1,1 @@
-Health_post = []
+Health_post = ["https://bimastreet.com/proposal/health-insurance/ckyc-verification?type=HP&quote_no=AM2200425545&product_id=180"]

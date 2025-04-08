@@ -25,6 +25,9 @@ class Testone(BaseClass):
     def test_healthleadpostquote(self):
         healthleadpost=QuotePage(self.driver)
         healthleadpost.healthpost()
+    def test_healthleadkyc(self):
+        healthleadkyc=QuotePage(self.driver)
+        healthleadkyc.healthkyc()
 
 
 
