@@ -25,6 +25,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from object.Selenium_helper import SeleniumHelper
 from concurrent.futures import ThreadPoolExecutor
 import threading
+from selenium.webdriver.common.keys import Keys
     
                                              
 
@@ -70,51 +71,70 @@ class KYc_function:
                 self.log.info(f"Gender selected: {selected_value}")
                 break
 
-    def Kycfunction(self):
-        stored_index = None
-        Kyc_fields = (By.CSS_SELECTOR, ".evInputField .MuiInputBase-root .MuiInputBase-input")
-        Kyc_formsubmission = self.wait.until(EC.presence_of_all_elements_located(Kyc_fields))
 
-        Kyc_Details = test_alldata.Kyc_Details  # Assuming this is globally available
+                            
+
+    def Kycfunction(self):
+        Kyc_Details = test_alldata.Kyc_Details
+        stored_index = None
+
+        Kyc_fields = (By.CSS_SELECTOR, ".evInputField .MuiInputBase-root .MuiInputBase-input")
+        try:
+            Kyc_formsubmission = self.wait.until(EC.presence_of_all_elements_located(Kyc_fields))
+        except TimeoutException:
+            self.log.error("Timeout while waiting for KYC form fields.")
+            return
 
         for kyc in Kyc_formsubmission:
-            idkyc = kyc.get_attribute('id')
+            try:
+                idkyc = kyc.get_attribute('id')
+                self.driver.execute_script("arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});", kyc)
+                self.wait.until(EC.element_to_be_clickable(kyc))
 
-            if idkyc in ["H.No. / Building", "Pincode", "Document ID", "Proposer Full Name"]:
-                if idkyc in Kyc_Details:
-                    value_to_enter = random.choice(Kyc_Details[idkyc]) if stored_index is None else Kyc_Details[idkyc][stored_index]
-                    stored_index = Kyc_Details[idkyc].index(value_to_enter)
-                    KYc_function.clear_and_fill_field(self, kyc, value_to_enter)
-                    time.sleep(2)
+                if idkyc in ["H.No. / Building", "Pincode", "Document ID", "Proposer Full Name"]:
+                    if idkyc in Kyc_Details:
+                        value = random.choice(Kyc_Details[idkyc]) if stored_index is None else Kyc_Details[idkyc][stored_index]
+                        stored_index = Kyc_Details[idkyc].index(value)
+                        kyc.click()
+                        kyc.clear()
+                        kyc.send_keys(value)
+                        kyc.send_keys(Keys.TAB)
+                        self.log.info(f"{idkyc} filled with {value}")
 
-            elif idkyc in [
-                "document_for_verification-autocomplete",
-                "income_source-autocomplete",
-                "occupation-autocomplete",
-                "city-autocomplete",
-                "area_/_town_/_locality-autocomplete"
-            ]:
-                if idkyc in Kyc_Details:
-                    value_to_enter = Kyc_Details[idkyc][stored_index]
-                    KYc_function.select_from_autocomplete(
-                        self, kyc, value_to_enter, (By.CSS_SELECTOR, ".css-ue1yok .MuiAutocomplete-option")
-                    )
-                    time.sleep(2)
+                elif idkyc in [
+                    "document_for_verification-autocomplete",
+                    "income_source-autocomplete",
+                    "occupation-autocomplete",
+                    "city-autocomplete",
+                    "area_/_town_/_locality-autocomplete"
+                ]:
+                    if idkyc in Kyc_Details:
+                        value = Kyc_Details[idkyc][stored_index]
+                        kyc.click()
+                        kyc.clear()
+                        kyc.send_keys(value)
+                        self.wait.until(
+                            EC.visibility_of_element_located((By.CSS_SELECTOR, ".MuiAutocomplete-popper .MuiAutocomplete-option"))
+                        ).click()
+                        self.log.info(f"{idkyc} selected: {value}")
 
-            elif idkyc == "gender":
-                if idkyc in Kyc_Details:
-                    selected_value = Kyc_Details[idkyc][stored_index]
-                    KYc_function.select_gender(self, kyc, selected_value)
-                    time.sleep(2)
+                elif idkyc == "gender":
+                    if idkyc in Kyc_Details:
+                        value = Kyc_Details[idkyc][stored_index]
+                        KYc_function.select_gender(self,kyc, value)
 
-            elif idkyc == "ckycproposerdob":
-                if idkyc in Kyc_Details:
-                    selected_value = Kyc_Details[idkyc][stored_index]
-                    SeleniumHelper.calander_picker(self, dob=selected_value)
-                    time.sleep(2)
+                elif idkyc == "ckycproposerdob":
+                    if idkyc in Kyc_Details:
+                        value = Kyc_Details[idkyc][stored_index]
+                        SeleniumHelper.calander_picker(self, dob=value)
+                        self.log.info(f"DOB set to: {value}")
+
+            except (StaleElementReferenceException, NoSuchElementException, TimeoutException) as e:
+                self.log.warning(f"Retrying field {idkyc} due to exception: {str(e)}")
+                continue
 
         self.log.info("KYC form filling completed.")
-                            
+
                                   
 
                         
