@@ -21,7 +21,9 @@ import time
 import inspect
 import test_data.test_alldata
 import test_data.test_alldata
-
+import asyncio
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
 
 class SeleniumHelper:
     def __init__(self, driver):
@@ -29,7 +31,7 @@ class SeleniumHelper:
         self.wait = WebDriverWait(self.driver, 20)
         self.AC=ActionChains(self.driver)
         self.log = self.getLogger()
-
+        
     def getLogger(self):
         loggerName = inspect.stack()[1][3]
         logger = logging.getLogger(loggerName)
@@ -279,61 +281,55 @@ class SeleniumHelper:
     
  
     
+  
     def calander_picker(self, dob):
+        """
+        Improved function to select the date from the calendar.
+        """
         # Split the dob into day, month, year
         month_map = {
-        "January": 1,
-        "February": 2,
-        "March": 3,
-        "April": 4,
-        "May": 5,
-        "June": 6,
-        "July": 7,
-        "August": 8,
-        "September": 9,
-        "October": 10,
-        "November": 11,
-        "December": 12
-    }
-        day, month, year = dob.split('-')
+            "January": 1,
+            "February": 2,
+            "March": 3,
+            "April": 4,
+            "May": 5,
+            "June": 6,
+            "July": 7,
+            "August": 8,
+            "September": 9,
+            "October": 10,
+            "November": 11,
+            "December": 12
+        }
         
-        # Find the calendar input field and click it
-        calendar_field = self.driver.find_element(By.CSS_SELECTOR, ".evInputField .MuiInputBase-root .MuiIconButton-root")
+        day, month, year = dob.split('-')
+
+        # Find and click the calendar input field
+        calendar_field = self.wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, ".evInputField .MuiInputBase-root .MuiIconButton-root")))
         calendar_field.click()
 
-        # Wait for the calendar to appear
-        time.sleep(2)
+        # Explicit wait for the calendar to open
+        self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, ".css-1v994a0")))
 
-        # Step 1: Navigate to the correct year
-        current_month_year = self.driver.find_element(By.CSS_SELECTOR, ".css-1v994a0")  # Adjust according to the HTML
+        # Navigate to the correct year
+        current_month_year = self.driver.find_element(By.CSS_SELECTOR, ".css-1v994a0")
         current_month, current_year = current_month_year.text.split()
 
-        # Click the year selection button (red-marked as per your screenshot)
-        year_select_button = self.driver.find_element(By.CSS_SELECTOR, ".css-1wjkg3")  # Adjust CSS selector if needed
+        # Open the year dropdown
+        year_select_button = self.wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, ".css-1wjkg3")))
+        year_select_button.click()
 
-        # Wait for the year selection button to be clickable and click it
-        WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable(year_select_button))
-        year_select_button.click()  # This opens the year selection menu
+        # Wait for the year dropdown to load
+        year_elements = self.wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, ".css-rhiqj0")))
 
-        # Wait for the year selection dropdown to appear
-        self.wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, ".css-rhiqj0")))
-
-        # Locate the dropdown menu with years and select the desired year
-        year_elements = self.driver.find_elements(By.CSS_SELECTOR, ".css-rhiqj0")
+        # Select the year from the dropdown
         for ye in year_elements:
             if ye.text == year:
-                # Scroll to the year element to ensure it is visible
-                # self.driver.execute_script("arguments[0].scrollIntoView(true);", ye)
-                
-                # Use ActionChains to click the year element
-                actions = ActionChains(self.driver)
-                actions.move_to_element(ye).click().perform()  # Move to the element and click it
+                ye.click()
                 break
-
+        self.log.info("yer")
+        time.sleep(4)
         # Wait for the calendar to update with the selected year
-        time.sleep(5)
-
-        # Step 2: Now, navigate to the correct month
         while current_month != month or current_year != year:
             # Update the current displayed month and year
             
@@ -375,17 +371,17 @@ class SeleniumHelper:
                 if current_month_int == target_month_int:
                     break
 
-        # Step 3: Select the specific day
-        time.sleep(5)
-        date_to_select = day  # We have the day from the dictionary (in DD format)
-        self.log.info(date_to_select)
-        aldays=By.CSS_SELECTOR,".css-a78wou"
-        alldays=self.wait.until(EC.presence_of_all_elements_located(aldays))
-        for alday in alldays:
-            if alday==date_to_select:
-                self.log.info(aldays)
-                aldays.click()
-                
+        # Wait for the days to be visible
+        days = self.wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, ".css-a78wou")))
+
+        # Select the specific day
+        for alday in days:
+            if alday.text.strip() == day:
+                alday.click()
+                break
+
+        # Explicit delay before returning (optional, in case you need to wait for the UI to update)
+        time.sleep(2)
 
         # # Use JavaScript to click on the specific date in the calendar
         # script = f"""
@@ -398,4 +394,4 @@ class SeleniumHelper:
         # """
         # # Execute the JavaScript to select the date
         # self.driver.execute_script(script)
-    
+
