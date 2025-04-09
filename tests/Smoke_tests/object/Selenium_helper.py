@@ -323,7 +323,7 @@ class SeleniumHelper:
         for ye in year_elements:
             if ye.text == year:
                 # Scroll to the year element to ensure it is visible
-                self.driver.execute_script("arguments[0].scrollIntoView(true);", ye)
+                # self.driver.execute_script("arguments[0].scrollIntoView(true);", ye)
                 
                 # Use ActionChains to click the year element
                 actions = ActionChains(self.driver)
@@ -331,7 +331,7 @@ class SeleniumHelper:
                 break
 
         # Wait for the calendar to update with the selected year
-        time.sleep(1)
+        time.sleep(5)
 
         # Step 2: Now, navigate to the correct month
         while current_month != month or current_year != year:
@@ -339,23 +339,28 @@ class SeleniumHelper:
             
 
                 # Navigate to the correct month using next/previous buttons
-                current_month_year = self.driver.find_element(By.CSS_SELECTOR, ".css-1v994a0")
+                current_month_year = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, ".css-1v994a0")))
                 current_month, current_year = current_month_year.text.split()
+                self.log.info("done int")
                 
                 # Convert the month name to an integer using the month_map dictionary
                 current_month_int = month_map[current_month]
-                target_month_int = month_map[month]
-
+                self.log.info("donemap")
+                target_month_int = int(month)
+                self.log.info(current_month_int)
+                self.log.info(target_month_int)
                 # Check if the current month is less than the target month or if the current year is less than the target year
-                if current_month_int < target_month_int or (current_month_int == target_month_int and int(current_year) < int(year)):
+                if current_month_int < target_month_int:
                     # Click "Next" month button
-                    next_month_button = self.driver.find_element(By.CSS_SELECTOR, ".css-1fklenr")
+                    next_month_button = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, ".css-1fklenr")))
                     next_month_button.click()
-                else:
+                    self.log.info('done')
+                elif current_month > target_month_int:
                     # Click "Previous" month button
-                    prev_month_button = self.driver.find_element(By.CSS_SELECTOR, ".css-11wxb")
+                    prev_month_button = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, ".css-11wxb")))
                     prev_month_button.click()
-
+                    self.log.info("predone")
+                
                 # Wait for the calendar to update
                 time.sleep(1)
 
@@ -367,16 +372,18 @@ class SeleniumHelper:
                 current_month_int = month_map[current_month]
 
                 # If current month matches the target month, break the loop
-                if current_month_int == target_month_int and current_year == year:
+                if current_month_int == target_month_int:
                     break
 
         # Step 3: Select the specific day
+        time.sleep(5)
         date_to_select = day  # We have the day from the dictionary (in DD format)
-
+        self.log.info(date_to_select)
         aldays=By.CSS_SELECTOR,".css-a78wou"
         alldays=self.wait.until(EC.presence_of_all_elements_located(aldays))
         for alday in alldays:
-            if aldays==date_to_select:
+            if alday==date_to_select:
+                self.log.info(aldays)
                 aldays.click()
                 
 

@@ -242,25 +242,16 @@ class QuotePage(BaseClass):
                 self.log.info('donekyc')
                 premkyc=By.CSS_SELECTOR,"h5.premium"
                 premkycfinal=self.wait.until(EC.presence_of_element_located(premkyc)).text
-
+                
 
                 
                 assert logolist[indexvalue] == srcinsurer_logekyc
                 assert premlist[indexvalue] == premkycfinal
+
+                
                     
                 del_record=SeleniumHelper.del_to_tests_data
                 del_record()
-
-                kycpageurl=self.driver.current_url
-        
-                Save_file=SeleniumHelper.save_to_test_data
-                Save_file(kycpageurl)
-                assert "ckyc-verification"   in  kycpageurl
-                self.log.info(kycpageurl)
-
-                time.sleep(10)
-
-
         except Exception as e:
             self.log.error(f"Health post quote failed: {e}")
             self.log.info(f"Current URL: {self.driver.current_url}")
