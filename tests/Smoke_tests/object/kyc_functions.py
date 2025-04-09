@@ -91,7 +91,7 @@ class KYc_function:
                 self.driver.execute_script("arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});", kyc)
                 self.wait.until(EC.element_to_be_clickable(kyc))
 
-                if idkyc in ["H.No. / Building", "Pincode", "Document ID", "Proposer Full Name"]:
+                if idkyc in ["H.No. / Building", "Pincode", "Document ID", "Proposer Full Name","Proposer Family Full Name"]:
                     if idkyc in Kyc_Details:
                         value = random.choice(Kyc_Details[idkyc]) if stored_index is None else Kyc_Details[idkyc][stored_index]
                         stored_index = Kyc_Details[idkyc].index(value)
@@ -106,7 +106,9 @@ class KYc_function:
                     "income_source-autocomplete",
                     "occupation-autocomplete",
                     "city-autocomplete",
-                    "area_/_town_/_locality-autocomplete"
+                    "area_/_town_/_locality-autocomplete",
+                    "pan/form_60",
+                    "family_relationship-autocomplete"
                 ]:
                     if idkyc in Kyc_Details:
                         value = Kyc_Details[idkyc][stored_index]
@@ -123,11 +125,12 @@ class KYc_function:
                         value = Kyc_Details[idkyc][stored_index]
                         KYc_function.select_gender(self,kyc, value)
 
-                elif idkyc == "ckycproposerdob":
+                elif idkyc in ["ckycproposerdob","dob"]:
                     if idkyc in Kyc_Details:
                         value = Kyc_Details[idkyc][stored_index]
                         SeleniumHelper.calander_picker(self, dob=value)
                         self.log.info(f"DOB set to: {value}")
+                
 
             except (StaleElementReferenceException, NoSuchElementException, TimeoutException) as e:
                 self.log.warning(f"Retrying field {idkyc} due to exception: {str(e)}")

@@ -120,11 +120,12 @@ from tests.test_data import test_newdata
 from tests.test_data import test_alldata
 import time
 import random
+import pyautogui
 import logging
 import asyncio
 from Smoke_tests.object.Selenium_helper import SeleniumHelper
 from Smoke_tests.object.kyc_functions import KYc_function
-
+import os
 class QuotePage(BaseClass):
 
     def __init__(self, driver):
@@ -266,6 +267,41 @@ class QuotePage(BaseClass):
                 time.sleep(10)
                 dokyc=KYc_function.Kycfunction(self)
                 dokyc
+            
+                time.sleep(1)
+                con=".primaryBtn"
+                
+                cont=self.driver.find_element(By.CSS_SELECTOR,(con) )  
+                cont.click() 
+                time.sleep(5) 
+                self.log.info("contin")
+                time.sleep(10)
+                manualkyc=By.ID,"Manual KYC"
+                mankyc=self.wait.until(EC.presence_of_element_located(manualkyc))
+                doc=By.CSS_SELECTOR,".secondaryBtn"
+                dockyc=self.wait.until(EC.presence_of_element_located(doc))
+                mankyc.click()
+                time.sleep(10)
+                #cutmannual kyc url
+                cururl=self.driver.current_url
+                if "manual-ckyc" in cururl:
+                    time.sleep(10)
+                    dokyc=KYc_function.Kycfunction(self)
+                    dokyc
+                    time.sleep(3)
+                    browse=By.CSS_SELECTOR,".browsebtn"
+                    browse_btn=self.wait.until(EC.presence_of_all_elements_located(browse))
+                    for bro in browse_btn:
+                        bro.click()
+                        time.sleep(2)  # Wait for file dialog to open
+                        file_name = "IMG_0360 - frame at 0m21s.jpg"
+                        abs_path = os.path.abspath(file_name)
+                        # Type the file path and press Enter
+                        pyautogui.write(abs_path)
+                        pyautogui.press("enter")
+
+
+
         except Exception as e:
             self.log.error(f"Health kyc failed: {e}")
             self.log.info(f"Current URL: {self.driver.current_url}")        
