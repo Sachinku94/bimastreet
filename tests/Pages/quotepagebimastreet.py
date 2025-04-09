@@ -121,6 +121,7 @@ from tests.test_data import test_alldata
 import time
 import random
 import logging
+import asyncio
 from Smoke_tests.object.Selenium_helper import SeleniumHelper
 from Smoke_tests.object.kyc_functions import KYc_function
 
