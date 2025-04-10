@@ -118,6 +118,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from tests.test_data import test_newdata 
 from tests.test_data import test_alldata
+from tests.test_data import test_kycdata
 import time
 import random
 import pyautogui
@@ -252,8 +253,7 @@ class QuotePage(BaseClass):
 
                 
                     
-                del_record=SeleniumHelper.del_to_tests_data
-                del_record()
+                
         except Exception as e:
             self.log.error(f"Health post quote failed: {e}")
             self.log.info(f"Current URL: {self.driver.current_url}")
@@ -278,32 +278,48 @@ class QuotePage(BaseClass):
                 time.sleep(10)
                 manualkyc=By.ID,"Manual KYC"
                 mankyc=self.wait.until(EC.presence_of_element_located(manualkyc))
-                doc=By.CSS_SELECTOR,".secondaryBtn"
-                dockyc=self.wait.until(EC.presence_of_element_located(doc))
+                # doc=By.CSS_SELECTOR,".secondaryBtn"
+                # dockyc=self.wait.until(EC.presence_of_element_located(doc))
                 mankyc.click()
                 time.sleep(10)
                 #cutmannual kyc url
-                cururl=self.driver.current_url
-                if "manual-ckyc" in cururl:
-                    time.sleep(10)
-                    dokyc=KYc_function.Kycfunction(self)
-                    dokyc
-                    time.sleep(3)
-                    browse=By.CSS_SELECTOR,".browsebtn"
-                    browse_btn=self.wait.until(EC.presence_of_all_elements_located(browse))
-                    for bro in browse_btn:
-                        bro.click()
-                        time.sleep(2)  # Wait for file dialog to open
-                        file_name = "IMG_0360 - frame at 0m21s.jpg"
-                        abs_path = os.path.abspath(file_name)
-                        # Type the file path and press Enter
-                        pyautogui.write(abs_path)
-                        pyautogui.press("enter")
+                cukrurl=self.driver.current_url
+                Save_file=SeleniumHelper.save_to_test_data_kyc
+                Save_file(cukrurl)
+                assert "quote_no"   in  cukrurl
+                self.log.info(cukrurl)
 
+                time.sleep(10)
 
 
         except Exception as e:
             self.log.error(f"Health kyc failed: {e}")
             self.log.info(f"Current URL: {self.driver.current_url}")        
 
+    def healthckyc(self):
+         try:
+            helthckycurl=test_kycdata.Health_kycpost
+            for hel in helthckycurl:
+                self.driver.get(hel)
 
+
+                cururl=self.driver.current_url
+
+                if "manual-ckyc" in cururl:
+                            time.sleep(10)
+                            dokyc=KYc_function.Kycfunction(self)
+                            dokyc
+                            time.sleep(3)
+                            browse=By.CSS_SELECTOR,".browsebtn"
+                            browse_btn=self.wait.until(EC.presence_of_all_elements_located(browse))
+                            for bro in browse_btn:
+                                bro.click()
+                                time.sleep(2)  # Wait for file dialog to open
+                                file_name = "IMG_0360 - frame at 0m21s.jpg"
+                                abs_path = os.path.abspath(file_name)
+                                # Type the file path and press Enter
+                                pyautogui.write(abs_path)
+                                pyautogui.press("enter")
+         except Exception as e:
+            self.log.error(f"Health kyc failed: {e}")
+            self.log.info(f"Current URL: {self.driver.current_url}") 

@@ -270,6 +270,19 @@ class SeleniumHelper:
             with open(file_path, "w") as f:
                 f.write(f"Health_post = {repr(test_newdata.Health_post)}")
 
+
+    def save_to_test_data_kyc(new_url):
+        from test_data import test_kycdata
+
+        # Avoid duplicates
+        if new_url not in test_kycdata.Health_kyc:
+            test_kycdata.Health_kyc.append(new_url)
+            file_path = inspect.getfile(test_kycdata)
+
+            # Overwrite test_alldata.py with the updated list only
+            with open(file_path, "w") as f:
+                f.write(f"Health_kycpost = {repr(test_kycdata.Health_kyc)}")
+
     def del_to_tests_data():
         from test_data import test_newdata
         test_newdata.Health_post.clear()

@@ -28,6 +28,9 @@ class Testone(BaseClass):
     def test_healthleadkyc(self):
         healthleadkyc=QuotePage(self.driver)
         healthleadkyc.healthkyc()
+    def test_healthckyc(self):
+        healthckyc=QuotePage(self.driver)
+        healthckyc.healthckyc()
 
 
 

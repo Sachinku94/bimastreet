@@ -1,0 +1,1 @@
+Health_kycpost = ['https://bimastreet.com/proposal/health-insurance/ckyc-verification?type=HP&quote_no=AM2200425545&product_id=180', 'https://bimastreet.com/proposal/health-insurance/manual-ckyc?type=HP']
