@@ -208,6 +208,11 @@ class QuotePage(BaseClass):
         Save_file(qotepageurl)
         assert "quote_no"   in  qotepageurl
         self.log.info(qotepageurl)
+        cukrurl=self.driver.current_url
+        Save_file=SeleniumHelper.save_to_test_data_kyc
+        Save_file(cukrurl)
+        assert "quote_no"   in  cukrurl
+        self.log.info(cukrurl)        
 
         time.sleep(10)
 
@@ -276,20 +281,16 @@ class QuotePage(BaseClass):
                 time.sleep(5) 
                 self.log.info("contin")
                 time.sleep(10)
-                manualkyc=By.ID,"Manual KYC"
-                mankyc=self.wait.until(EC.presence_of_element_located(manualkyc))
-                # doc=By.CSS_SELECTOR,".secondaryBtn"
-                # dockyc=self.wait.until(EC.presence_of_element_located(doc))
-                mankyc.click()
-                time.sleep(10)
-                #cutmannual kyc url
-                cukrurl=self.driver.current_url
-                Save_file=SeleniumHelper.save_to_test_data_kyc
-                Save_file(cukrurl)
-                assert "quote_no"   in  cukrurl
-                self.log.info(cukrurl)
+                # manualkyc=By.ID,"Manual KYC"
+                # mankyc=self.wait.until(EC.presence_of_element_located(manualkyc))
+                # # doc=By.CSS_SELECTOR,".secondaryBtn"
+                # # dockyc=self.wait.until(EC.presence_of_element_located(doc))
+                # mankyc.click()
+                # time.sleep(10)
+                # #cutmannual kyc url
+                
 
-                time.sleep(10)
+                
 
 
         except Exception as e:
@@ -301,6 +302,23 @@ class QuotePage(BaseClass):
             helthckycurl=test_kycdata.Health_kycpost
             for hel in helthckycurl:
                 self.driver.get(hel)
+                dokyc=KYc_function.Kycfunction(self)
+                dokyc
+            
+                time.sleep(1)
+                con=".primaryBtn"
+                
+                cont=self.driver.find_element(By.CSS_SELECTOR,(con) )  
+                cont.click() 
+                time.sleep(5) 
+                self.log.info("contin")
+                time.sleep(10)
+                manualkyc=By.ID,"Manual KYC"
+                mankyc=self.wait.until(EC.presence_of_element_located(manualkyc))
+                # doc=By.CSS_SELECTOR,".secondaryBtn"
+                # dockyc=self.wait.until(EC.presence_of_element_located(doc))
+                mankyc.click()
+                time.sleep(10)
 
 
                 cururl=self.driver.current_url
