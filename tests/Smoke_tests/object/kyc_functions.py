@@ -7,6 +7,7 @@ import time, random, logging, inspect
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import StaleElementReferenceException
 from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import InvalidElementStateException
 from concurrent.futures import ThreadPoolExecutor
 from selenium.common.exceptions import TimeoutException
 import inspect
@@ -32,7 +33,7 @@ from selenium.webdriver.common.keys import Keys
 class KYc_function:
     def __init__(self, driver):
         self.driver = driver
-        self.wait = WebDriverWait(self.driver, 20)
+        self.wait = WebDriverWait(self.driver, 10)
         self.log = KYc_function.getLogger(self)
 
     def getLogger(self):
@@ -91,7 +92,7 @@ class KYc_function:
                 self.driver.execute_script("arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});", kyc)
                 self.wait.until(EC.element_to_be_clickable(kyc))
 
-                if idkyc in ["H.No. / Building", "Pincode", "Document ID", "Proposer Full Name","Proposer Family Full Name"]:
+                if idkyc in ["H.No. / Building", "Pincode", "Document ID", "Proposer Full Name","Proposer Family Full Name","Pan Card"]:
                     if idkyc in Kyc_Details:
                         value = random.choice(Kyc_Details[idkyc]) if stored_index is None else Kyc_Details[idkyc][stored_index]
                         stored_index = Kyc_Details[idkyc].index(value)
@@ -107,23 +108,58 @@ class KYc_function:
                     "occupation-autocomplete",
                     "city-autocomplete",
                     "area_/_town_/_locality-autocomplete",
-                    "pan/form_60",
+                    
                     "family_relationship-autocomplete"
                 ]:
                     if idkyc in Kyc_Details:
-                        value = Kyc_Details[idkyc][stored_index]
+                                raw_value = Kyc_Details[idkyc][stored_index]
+
+                    # Handle values like "PAN Card or Aadhar Card"
+                    if isinstance(raw_value, str):
+                        # Split on 'or' if present
+                        value_options = [v.strip() for v in raw_value.split("or")]
+                    elif isinstance(raw_value, list):
+                        value_options = raw_value
+                    else:
+                        value_options = [raw_value]
+
+                    selected = False
+                    # for value in value_options:
+                    #     kyc.click()
+                    #     kyc.clear()
+                    #     kyc.send_keys(value)
+                    #     self.wait.until(
+                    #         EC.visibility_of_element_located((By.CSS_SELECTOR, ".MuiAutocomplete-popper .MuiAutocomplete-option"))
+                    #     ).click()
+                    #     self.log.info(f"{idkyc} selected: {value}")
+                    for value in value_options:
                         kyc.click()
                         kyc.clear()
                         kyc.send_keys(value)
-                        self.wait.until(
-                            EC.visibility_of_element_located((By.CSS_SELECTOR, ".MuiAutocomplete-popper .MuiAutocomplete-option"))
-                        ).click()
-                        self.log.info(f"{idkyc} selected: {value}")
+                        try:
+                            # Wait for dropdown and try clicking the matching option
+                            self.wait.until(
+                                EC.visibility_of_element_located((By.CSS_SELECTOR, ".MuiAutocomplete-popper .MuiAutocomplete-option"))
+                            ).click()
+                            self.log.info(f"{idkyc} selected: {value}")
+                            selected = True
+                            break  # Stop if selection is successful
+                        except TimeoutException:
+                            self.log.warning(f"{value} not available in dropdown, trying next option...")
+
+                    if not selected:
+                        
+                        self.log.error(f"No matching option found for {idkyc} from values: {value_options}")
 
                 elif idkyc == "gender":
                     if idkyc in Kyc_Details:
                         value = Kyc_Details[idkyc][stored_index]
                         KYc_function.select_gender(self,kyc, value)
+                elif idkyc == "pan/form_60":
+                    if idkyc in Kyc_Details:
+                        value = Kyc_Details[idkyc][stored_index]
+                        KYc_function.select_gender(self,kyc, value)
+
 
                 elif idkyc in ["ckycproposerdob","dob"]:
                     if idkyc in Kyc_Details:
@@ -132,7 +168,7 @@ class KYc_function:
                         self.log.info(f"DOB set to: {value}")
                 
 
-            except (StaleElementReferenceException, NoSuchElementException, TimeoutException) as e:
+            except (StaleElementReferenceException, NoSuchElementException, TimeoutException, InvalidElementStateException ) as e:
                 self.log.warning(f"Retrying field {idkyc} due to exception: {str(e)}")
                 continue
 

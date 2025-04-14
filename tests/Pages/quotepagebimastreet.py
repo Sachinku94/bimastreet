@@ -338,6 +338,10 @@ class QuotePage(BaseClass):
                                 # Type the file path and press Enter
                                 pyautogui.write(abs_path)
                                 pyautogui.press("enter")
+                            con=".primaryBtn"
+                
+                            cont=self.driver.find_element(By.CSS_SELECTOR,(con) )  
+                            cont.click()
          except Exception as e:
             self.log.error(f"Health kyc failed: {e}")
             self.log.info(f"Current URL: {self.driver.current_url}") 
